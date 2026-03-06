@@ -2,22 +2,25 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main # Or 'master' depending on your repo
+      - main  # Change this to 'master' if your main branch is named master
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout 🛎️
         uses: actions/checkout@v4
 
-      - name: Install and Build
+      - name: Install and Build 🔧
         run: |
           npm install
-          npm run build -- --base-href /<your-repo-name>/
+          npx ng build --base-href /utilities/
 
-      - name: Deploy
+      - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist/<your-project-name> # Path to your build folder
+          folder: dist/utilities/browser 
           branch: gh-pages
