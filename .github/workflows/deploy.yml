@@ -2,7 +2,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main  # Change this to 'master' if your main branch is named master
+      - main # Change this to 'master' if your main branch is named master
 
 permissions:
   contents: write
@@ -22,5 +22,5 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist/utilities/browser 
+          folder: dist/utilities/browser
           branch: gh-pages

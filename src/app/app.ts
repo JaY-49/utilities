@@ -24,6 +24,7 @@ import { LineHighlighterComponent } from './features/line-highlighter/line-highl
 import { CharFrequencyComponent } from './features/char-frequency/char-frequency.component';
 import { ColumnAlignerComponent } from './features/column-aligner/column-aligner.component';
 import { FileSizeFormatterComponent } from './features/file-size-formatter/file-size-formatter.component';
+import { distinctUntilChanged } from 'rxjs';
 
 /**
  * Root component – renders a Material sidenav layout housing utility features.
@@ -68,18 +69,12 @@ export class App implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
 
   ngOnInit() {
-    this.breakpointObserver.observe([
-      Breakpoints.Handset,
-      Breakpoints.Tablet
-    ]).subscribe(result => {
-      this.isSmallScreen.set(result.matches);
-      // Auto-collapse if small screen detected
-      if (result.matches) {
-        this.sidebarOpened.set(false);
-      } else {
-        this.sidebarOpened.set(true);
-      }
-    });
+    this.breakpointObserver.observe('(max-width:1024px)')
+      .pipe(distinctUntilChanged())
+      .subscribe(result => {
+        this.isSmallScreen.set(result.matches);
+        this.sidebarOpened.set(!result.matches);
+      });
   }
 
   toggleSidebar() {

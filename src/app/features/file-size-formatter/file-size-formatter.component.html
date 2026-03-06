@@ -10,14 +10,28 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-4">
+        <!-- Mode Toggle -->
+        <div class="flex flex-col gap-2">
+            <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                Mode
+            </label>
 
-        <mat-button-toggle-group [value]="mode()" (change)="mode.set($event.value)"
-            class="rounded-2xl border border-slate-200 overflow-hidden font-mono text-md tracking-[0.12em] uppercase">
+            <div class="flex border border-slate-200 rounded-2xl overflow-hidden">
 
-            <mat-button-toggle value="bytes-to-human">Bytes → Human</mat-button-toggle>
-            <mat-button-toggle value="human-to-bytes">Human → Bytes</mat-button-toggle>
+                <button (click)="mode.set('bytes-to-human')" [class.bg-slate-900]="mode() === 'bytes-to-human'"
+                    [class.text-white]="mode() === 'bytes-to-human'"
+                    class="px-5 h-12 font-mono text-md uppercase tracking-[0.15em] text-slate-500 cursor-pointer transition">
+                    Bytes → Human
+                </button>
 
-        </mat-button-toggle-group>
+                <button (click)="mode.set('human-to-bytes')" [class.bg-slate-900]="mode() === 'human-to-bytes'"
+                    [class.text-white]="mode() === 'human-to-bytes'"
+                    class="px-5 h-12 font-mono text-md uppercase tracking-[0.15em] text-slate-500 cursor-pointer transition">
+                    Human → Bytes
+                </button>
+
+            </div>
+        </div>
 
         <button (click)="clear()"
             class="ml-auto h-12 px-6 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150">

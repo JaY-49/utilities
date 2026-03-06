@@ -21,13 +21,13 @@
             <div class="flex border border-slate-200 rounded-2xl overflow-hidden">
                 <button (click)="mode.set('csv-to-json')" [class.bg-slate-900]="mode() === 'csv-to-json'"
                     [class.text-white]="mode() === 'csv-to-json'"
-                    class="px-5 h-12 font-mono text-md uppercase tracking-[0.15em] text-slate-500 hover:bg-slate-50">
+                    class="px-5 h-12 font-mono text-md uppercase tracking-[0.15em] text-slate-500 cursor-pointer">
                     CSV → JSON
                 </button>
 
                 <button (click)="mode.set('json-to-csv')" [class.bg-slate-900]="mode() === 'json-to-csv'"
                     [class.text-white]="mode() === 'json-to-csv'"
-                    class="px-5 h-12 font-mono text-md uppercase tracking-[0.15em] text-slate-500 hover:bg-slate-50">
+                    class="px-5 h-12 font-mono text-md uppercase tracking-[0.15em] text-slate-500 cursor-pointer">
                     JSON → CSV
                 </button>
             </div>

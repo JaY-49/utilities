@@ -11,15 +11,15 @@
 }
 
 .nav-active {
-  background-color: #ede9fe !important; /* violet-100 */
+  background-color: #ede9fe !important;
 }
 
 .nav-active mat-icon {
-  color: #7c3aed !important; /* violet-600 */
+  color: #7c3aed !important;
 }
 
 .nav-active .mdc-list-item__primary-text {
-  color: #4c1d95 !important; /* violet-900 */
+  color: #4c1d95 !important;
 }
 
 app-root {
@@ -32,22 +32,39 @@ app-root {
   display: none !important;
 }
 
-/* Centering icons in collapsed sidebar */
-::ng-deep .collapsed-sidebar .nav-item .mdc-list-item__content {
-  display: flex !important;
-  justify-content: center !important;
-  padding: 0 !important;
-}
+/* ----------------------------- */
+/* COLLAPSED SIDEBAR FIX */
+/* ----------------------------- */
 
-::ng-deep .collapsed-sidebar .nav-item .mat-mdc-list-item-icon {
-  margin-right: 0 !important;
-  /* Ensure the icon is centered within the highlight-box */
-  display: flex !important;
-  align-items: center !important;
+/* center list item */
+::ng-deep .collapsed-sidebar .mat-mdc-list-item {
   justify-content: center !important;
-}
-
-::ng-deep .collapsed-sidebar .nav-item {
-  /* Set a consistent height so the icons have breathing room vertically */
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   min-height: 48px !important;
+}
+
+/* hide label text */
+::ng-deep .collapsed-sidebar .mdc-list-item__content {
+  display: none !important;
+}
+
+/* center icon */
+::ng-deep .collapsed-sidebar .mat-mdc-list-item-icon {
+  margin: 0 auto !important;
+}
+
+/* ensure icon is centered */
+::ng-deep .collapsed-sidebar .mat-icon {
+  margin: auto !important;
+}
+
+/* label style when sidebar expanded */
+
+.menu-label {
+  font-family: ui-monospace, monospace;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: #475569;
 }
