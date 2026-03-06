@@ -23,7 +23,7 @@
   </div>
 </header>
 
-<mat-sidenav-container class="grow" style="height: calc(100vh - 64px)">
+<mat-sidenav-container class="grow" style="height: calc(100vh - 80px)">
 
   <mat-sidenav #drawer="matSidenav" mode="side" opened
     class="transition-all duration-300 border-r border-slate-200 bg-white shadow-sm" [class.w-72]="sidebarOpened()"
@@ -41,9 +41,9 @@
           [matTooltip]="!sidebarOpened() ? 'Time Calculator' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="clock" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Time Calculator
-           </label>
+          </label>
           }
         </a>
 
@@ -52,9 +52,9 @@
           [matTooltip]="!sidebarOpened() ? 'JSON Viewer' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="code" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             JSON Viewer
-           </label>
+          </label>
           }
         </a>
 
@@ -63,9 +63,9 @@
           [matTooltip]="!sidebarOpened() ? 'JSON To TS' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="file-code" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             JSON To TS
-           </label>
+          </label>
           }
         </a>
 
@@ -74,9 +74,9 @@
           [matTooltip]="!sidebarOpened() ? 'CSV ↔ JSON' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="table-columns" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             CSV ↔ JSON
-           </label>
+          </label>
           }
         </a>
 
@@ -85,9 +85,9 @@
           [matTooltip]="!sidebarOpened() ? 'JWT Debugger' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="shield-halved" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             JWT Debugger
-           </label>
+          </label>
           }
         </a>
 
@@ -96,9 +96,9 @@
           [matTooltip]="!sidebarOpened() ? 'Diff Checker' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="copy" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Diff Checker
-           </label>
+          </label>
           }
         </a>
 
@@ -107,9 +107,9 @@
           [matTooltip]="!sidebarOpened() ? 'Line Highlighter' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="list-check" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Line Highlighter
-           </label>
+          </label>
           }
         </a>
 
@@ -122,9 +122,9 @@
           [matTooltip]="!sidebarOpened() ? 'Text Toolbox' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="pencil" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Text Toolbox
-           </label>
+          </label>
           }
         </a>
 
@@ -133,9 +133,9 @@
           [matTooltip]="!sidebarOpened() ? 'Duplicate Detector' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="clone" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Duplicate Detector
-           </label>
+          </label>
           }
         </a>
 
@@ -144,9 +144,9 @@
           [matTooltip]="!sidebarOpened() ? 'Column Aligner' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="align-left" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Column Aligner
-           </label>
+          </label>
           }
         </a>
 
@@ -155,9 +155,9 @@
           [matTooltip]="!sidebarOpened() ? 'RegEx Tester' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="magnifying-glass" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             RegEx Tester
-           </label>
+          </label>
           }
         </a>
 
@@ -166,9 +166,9 @@
           [matTooltip]="!sidebarOpened() ? 'Char Frequency' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="chart-bar" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Char Frequency
-           </label>
+          </label>
           }
         </a>
 
@@ -177,9 +177,9 @@
           [matTooltip]="!sidebarOpened() ? 'Base64 / URL' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="lock" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Base64 / URL
-           </label>
+          </label>
           }
         </a>
 
@@ -192,9 +192,9 @@
           [matTooltip]="!sidebarOpened() ? 'File Converter' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="right-left" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             File Converter
-           </label>
+          </label>
           }
         </a>
 
@@ -203,9 +203,9 @@
           [matTooltip]="!sidebarOpened() ? 'Epoch Converter' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="calendar-days" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Epoch Converter
-           </label>
+          </label>
           }
         </a>
 
@@ -214,9 +214,9 @@
           [matTooltip]="!sidebarOpened() ? 'File Size Formatter' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="hard-drive" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             File Size Formatter
-           </label>
+          </label>
           }
         </a>
 
@@ -225,9 +225,9 @@
           [matTooltip]="!sidebarOpened() ? 'Generator' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="key" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             Generator
-           </label>
+          </label>
           }
         </a>
 
@@ -236,9 +236,9 @@
           [matTooltip]="!sidebarOpened() ? 'QR Generator' : ''" matTooltipPosition="right">
           <mat-icon matListItemIcon svgIcon="qrcode-read" class="text-slate-600"></mat-icon>
           @if (sidebarOpened()) {
-           <label class="text-md font-mono font-semibold uppercase text-slate-600">
+          <label class="text-md font-mono font-semibold uppercase text-slate-600">
             QR Generator
-           </label>
+          </label>
           }
         </a>
 
