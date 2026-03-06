@@ -1,0 +1,174 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            File Size Formatter
+        </h2>
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Size Conversion
+        </span>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-4">
+
+        <mat-button-toggle-group [value]="mode()" (change)="mode.set($event.value)"
+            class="rounded-2xl border border-slate-200 overflow-hidden font-mono text-md tracking-[0.12em] uppercase">
+
+            <mat-button-toggle value="bytes-to-human">Bytes → Human</mat-button-toggle>
+            <mat-button-toggle value="human-to-bytes">Human → Bytes</mat-button-toggle>
+
+        </mat-button-toggle-group>
+
+        <button (click)="clear()"
+            class="ml-auto h-12 px-6 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150">
+            Clear
+        </button>
+
+    </div>
+
+    @if (mode() === 'bytes-to-human') {
+
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+
+        <div class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+        </div>
+
+        <div class="flex flex-col gap-4">
+
+            <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                Enter Bytes
+            </span>
+
+            <div
+                class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+
+                <input type="number" min="0" [(ngModel)]="bytesInput" placeholder="e.g. 1073741824"
+                    class="w-full font-mono text-lg bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300">
+
+            </div>
+
+            <span class="text-md font-mono text-slate-400 tracking-wide">
+                Enter a number of bytes to see all unit conversions
+            </span>
+
+        </div>
+
+    </div>
+
+    @if (sizeTable().length) {
+
+    <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+
+        <div class="px-6 py-3 border-b border-slate-200 bg-slate-50">
+            <span class="text-md font-mono font-semibold uppercase tracking-[0.2em] text-slate-500">
+                Conversion Table
+            </span>
+        </div>
+
+        <div
+            class="grid grid-cols-3 px-6 py-3 bg-slate-50 border-b border-slate-100 text-md font-mono font-semibold uppercase tracking-[0.2em] text-slate-400">
+
+            <span>Unit</span>
+            <span>Binary (1024)</span>
+            <span>SI (1000)</span>
+
+        </div>
+
+        @for (row of sizeTable(); track row.label) {
+
+        <div
+            class="grid grid-cols-3 px-6 py-3 border-b border-slate-50 hover:bg-sky-50/30 transition-colors font-mono text-sm">
+
+            <span class="font-semibold text-slate-700">{{ row.label }}</span>
+
+            <span class="text-sky-700 cursor-pointer hover:text-sky-900 select-all" (click)="copy(row.binary)">
+                {{ row.binary }}
+            </span>
+
+            <span class="text-indigo-700 cursor-pointer hover:text-indigo-900 select-all" (click)="copy(row.si)">
+                {{ row.si }}
+            </span>
+
+        </div>
+
+        }
+
+    </div>
+
+    }
+
+    } @else {
+
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+
+        <div class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+        </div>
+
+        <div class="flex flex-col gap-4">
+
+            <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                Enter Human Size
+            </span>
+
+            <div
+                class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+
+                <input [(ngModel)]="humanInput" placeholder="e.g. 1.5 GB or 512 MiB"
+                    class="w-full font-mono text-lg bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300">
+
+            </div>
+
+            <span class="text-md font-mono text-slate-400 tracking-wide">
+                Supported units: B, KB, MB, GB, TB, PB, KiB, MiB, GiB, TiB, PiB
+            </span>
+
+        </div>
+
+    </div>
+
+    @if (reverseResult().error) {
+
+    <div
+        class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+
+        <mat-icon svgIcon="triangle-exclamation"></mat-icon>
+        {{ reverseResult().error }}
+
+    </div>
+
+    }
+
+    @if (reverseResult().bytes !== null) {
+
+    <div class="bg-white border border-sky-200 rounded-3xl shadow-sm overflow-hidden">
+
+        <div class="px-6 py-3 border-b border-sky-200 bg-sky-50">
+            <span class="text-md font-mono font-semibold uppercase tracking-[0.2em] text-sky-600">
+                Result
+            </span>
+        </div>
+
+        <div class="p-6 flex items-center justify-between">
+
+            <div>
+                <p class="m-0 text-sm text-slate-500 font-medium">Exact Bytes</p>
+
+                <p class="m-0 mt-1 text-3xl italic text-sky-700 font-mono tabular-nums select-all">
+                    {{ reverseResult().bytes!.toLocaleString() }}
+                </p>
+            </div>
+
+            <button (click)="copy(reverseResult().bytes!.toString())"
+                class="h-12 px-6 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]">
+                Copy
+            </button>
+
+        </div>
+
+    </div>
+
+    }
+
+    }
+
+</div>

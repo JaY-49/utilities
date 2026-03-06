@@ -1,0 +1,122 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            Base64 & URL Encoder
+        </h2>
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Encoding Tools
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Base64 -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                    Base64
+                </span>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <div
+                    class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                    <textarea [(ngModel)]="b64Input" rows="4" placeholder="Hello, World!"
+                        class="w-full font-mono text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 resize-none"></textarea>
+                </div>
+
+                <div class="flex gap-3">
+                    <button (click)="b64Encode()" [disabled]="!b64Input()"
+                        class="flex-1 h-12 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]">
+                        Encode
+                    </button>
+
+                    <button (click)="b64Decode()" [disabled]="!b64Input()"
+                        class="flex-1 h-12 px-6 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150">
+                        Decode
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                    URL Encoding
+                </span>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <div
+                    class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                    <textarea [(ngModel)]="urlInput" rows="4" placeholder="https://example.com?q=hello world"
+                        class="w-full font-mono text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 resize-none"></textarea>
+                </div>
+
+                <div class="flex gap-3">
+                    <button (click)="urlEncode()" [disabled]="!urlInput()"
+                        class="flex-1 h-12 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]">
+                        Encode
+                    </button>
+
+                    <button (click)="urlDecode()" [disabled]="!urlInput()"
+                        class="flex-1 h-12 px-6 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150">
+                        Decode
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (b64Output() || urlOutput()) {
+    <div class="bg-white border border-emerald-200 rounded-3xl shadow-sm overflow-hidden">
+        <div class="px-6 py-3 border-b border-emerald-200 bg-emerald-50">
+            <span class="text-md font-mono font-semibold uppercase tracking-[0.2em] text-emerald-600">
+                Encoded Result
+            </span>
+        </div>
+
+        <div class="p-6 flex flex-col gap-6">
+            @if (b64Output()) {
+            <div
+                class="flex items-center gap-4 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 font-mono text-sm text-emerald-900 break-all">
+                <span class="flex-1 select-all">{{ b64Output() }}</span>
+
+                <button (click)="copy(b64Output())"
+                    class="h-12 px-6 bg-transparent hover:bg-white text-emerald-700 border border-emerald-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150">
+                    Copy
+                </button>
+            </div>
+            }
+
+            @if (urlOutput()) {
+            <div
+                class="flex items-center gap-4 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 font-mono text-sm text-emerald-900 break-all">
+                <span class="flex-1 select-all">{{ urlOutput() }}</span>
+
+                <button (click)="copy(urlOutput())"
+                    class="h-12 px-6 bg-transparent hover:bg-white text-emerald-700 border border-emerald-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150">
+                    Copy
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+    @if (error()) {
+    <div
+        class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+        <mat-icon svgIcon="triangle-exclamation"></mat-icon>
+        {{ error() }}
+    </div>
+    }
+</div>

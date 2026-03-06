@@ -1,0 +1,134 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            UUID & Password Generator
+        </h2>
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Secure Tokens
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+
+        <!-- UUID Generator -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400 block mb-4">
+                UUID v4 Generator
+            </span>
+
+            <div class="flex flex-col gap-4">
+
+                <button (click)="generateUuids()"
+                    class="h-12 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]">
+                    Generate UUID
+                </button>
+
+                @if (uuids().length) {
+                <div class="flex flex-col gap-2 animate-[fadeUp_0.3s_ease]">
+
+                    @for (uuid of uuids(); track $index) {
+                    <div
+                        class="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 font-mono text-sm group hover:bg-cyan-50 transition-colors">
+
+                        <span class="flex-1 select-all tracking-tight text-slate-700">{{ uuid }}</span>
+
+                        <button (click)="copy(uuid)"
+                            class="opacity-0 group-hover:opacity-100 transition-opacity h-10 px-4 border border-slate-200 rounded-2xl bg-white hover:bg-slate-50 text-slate-500 font-mono text-md tracking-[0.12em] uppercase">
+                            Copy
+                        </button>
+
+                    </div>
+                    }
+
+                </div>
+                }
+
+            </div>
+
+        </div>
+
+        <!-- Password Generator -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400 block mb-4">
+                Password Generator
+            </span>
+
+            <div class="flex flex-col gap-4">
+
+                <div
+                    class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+
+                    <input type="number" [(ngModel)]="pwLength" min="4" max="128" placeholder="Length (4-128)"
+                        class="w-full font-mono text-base bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300">
+
+                </div>
+
+                <div class="flex flex-wrap gap-3">
+
+                    <label class="flex items-center gap-2 font-mono text-sm text-slate-600">
+                        <input type="checkbox" [(ngModel)]="includeUpper" class="accent-slate-800">
+                        ABC
+                    </label>
+
+                    <label class="flex items-center gap-2 font-mono text-sm text-slate-600">
+                        <input type="checkbox" [(ngModel)]="includeLower" class="accent-slate-800">
+                        abc
+                    </label>
+
+                    <label class="flex items-center gap-2 font-mono text-sm text-slate-600">
+                        <input type="checkbox" [(ngModel)]="includeNumbers" class="accent-slate-800">
+                        123
+                    </label>
+
+                    <label class="flex items-center gap-2 font-mono text-sm text-slate-600">
+                        <input type="checkbox" [(ngModel)]="includeSymbols" class="accent-slate-800">
+                        !@#
+                    </label>
+
+                </div>
+
+                <button (click)="generatePasswords()"
+                    class="h-12 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]">
+                    Generate Password
+                </button>
+
+                @if (passwords().length) {
+
+                <div class="flex flex-col gap-2 mt-2 animate-[fadeUp_0.3s_ease]">
+
+                    @for (pw of passwords(); track $index) {
+                    <div
+                        class="flex items-center gap-3 px-4 py-3 bg-slate-50 rounded-2xl border border-slate-200 font-mono text-sm group hover:bg-cyan-50 transition-colors">
+
+                        <span class="flex-1 select-all break-all tracking-wide text-slate-700">{{ pw }}</span>
+
+                        <button (click)="copy(pw)"
+                            class="opacity-0 group-hover:opacity-100 transition-opacity h-10 px-4 border border-slate-200 rounded-2xl bg-white hover:bg-slate-50 text-slate-500 font-mono text-md tracking-[0.12em] uppercase">
+                            Copy
+                        </button>
+
+                    </div>
+                    }
+
+                </div>
+
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

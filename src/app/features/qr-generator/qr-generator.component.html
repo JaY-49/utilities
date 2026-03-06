@@ -1,0 +1,152 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            QR Code Generator
+        </h2>
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            QR Encoding
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+        <!-- Configuration -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <div class="flex flex-col gap-6">
+
+                <div class="flex flex-col gap-2">
+                    <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                        Content
+                    </label>
+
+                    <div
+                        class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                        <textarea [(ngModel)]="text" rows="4" placeholder="https://example.com"
+                            class="w-full font-mono text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 resize-none"></textarea>
+                    </div>
+
+                    <span class="text-md font-mono text-slate-400 tracking-wide">
+                        The QR code updates automatically as you type
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                    <!-- Colors -->
+                    <div class="flex flex-col gap-3">
+                        <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                            Colors
+                        </span>
+
+                        <div class="flex items-center gap-4">
+
+                            <div class="flex flex-col gap-1">
+                                <span class="text-md font-mono text-slate-400">Foreground</span>
+                                <input type="color" [(ngModel)]="darkColor"
+                                    class="w-12 h-10 rounded-xl border border-slate-200 cursor-pointer p-0 overflow-hidden">
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <span class="text-md font-mono text-slate-400">Background</span>
+                                <input type="color" [(ngModel)]="lightColor"
+                                    class="w-12 h-10 rounded-xl border border-slate-200 cursor-pointer p-0 overflow-hidden">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Size -->
+                    <div class="flex flex-col gap-3">
+                        <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                            Dimensions
+                        </span>
+
+                        <span class="text-md font-mono text-slate-400">
+                            Size: {{ size() }}px
+                        </span>
+
+                        <mat-slider min="128" max="512" step="8">
+                            <input matSliderThumb [(ngModel)]="size">
+                        </mat-slider>
+                    </div>
+
+                </div>
+
+                <div class="flex gap-3 pt-2">
+
+                    <button (click)="download()" [disabled]="!text()"
+                        class="flex-1 h-12 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]">
+                        Download PNG
+                    </button>
+
+                    <button (click)="clear()"
+                        class="h-12 px-6 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150">
+                        Clear
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Preview -->
+        <div
+            class="bg-white border border-slate-200 rounded-3xl shadow-sm relative overflow-hidden flex flex-col items-center justify-center min-h-80">
+
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <div class="w-full px-6 py-3 border-b border-slate-200 bg-slate-50">
+                <span class="text-md font-mono font-semibold uppercase tracking-[0.2em] text-slate-500">
+                    Live Preview
+                </span>
+            </div>
+
+            <div class="p-10 flex flex-col items-center justify-center w-full">
+
+                @if (error()) {
+                <div
+                    class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+                    <mat-icon svgIcon="triangle-exclamation"></mat-icon>
+                    {{ error() }}
+                </div>
+                }
+
+                @else if (!text()) {
+
+                <div class="flex flex-col items-center gap-4 opacity-40">
+
+                    <mat-icon svgIcon="qrcode-read" class="w-20 h-20 text-[5rem] text-slate-300"></mat-icon>
+
+                    <div class="text-center">
+                        <p class="m-0 text-md font-mono text-slate-400 uppercase tracking-[0.18em]">
+                            Awaiting Content
+                        </p>
+                        <p class="m-0 text-md font-mono text-slate-300 mt-1 italic">
+                            Type something to generate a code
+                        </p>
+                    </div>
+
+                </div>
+
+                }
+
+                <div [class.hidden]="!text() || error()" class="flex justify-center">
+                    <canvas #qrCanvas class="shadow-xl rounded-2xl border border-slate-200 max-w-full h-auto"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,128 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+
+    <!-- Header -->
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            JSON ↔ TypeScript Interface
+        </h2>
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Code Generator
+        </span>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+        <!-- INPUT CARD -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <div class="flex flex-col gap-6">
+
+                <!-- Root Name -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                        Root Interface
+                    </label>
+
+                    <div class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200
+                                focus-within:border-blue-400 focus-within:bg-white
+                                focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+
+                        <input [(ngModel)]="rootInterfaceName" placeholder="MyData"
+                            class="w-full font-mono text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300" />
+                    </div>
+                </div>
+
+                <!-- JSON Input -->
+                <div class="flex flex-col gap-2">
+                    <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                        JSON Input
+                    </label>
+
+                    <div class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200
+                                focus-within:border-blue-400 focus-within:bg-white
+                                focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+
+                        <textarea [(ngModel)]="jsonInput" rows="12" placeholder='{"id":1,"name":"Antigravity"}'
+                            class="w-full font-mono text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 leading-relaxed resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-3">
+
+                    <button (click)="generate()" [disabled]="!jsonInput()" class="flex-1 h-12 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl
+                               font-mono text-md font-medium tracking-[0.15em] uppercase
+                               transition-all duration-150 active:scale-[0.97] cursor-pointer">
+                        Generate
+                    </button>
+
+                    <button (click)="clear()" class="h-12 px-5 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600
+                               border border-slate-200 rounded-2xl font-mono text-md
+                               tracking-[0.12em] uppercase transition-all duration-150 cursor-pointer">
+                        Clear
+                    </button>
+
+                </div>
+
+                <!-- Error -->
+                @if (error()) {
+                <div class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl
+                           text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+                    <mat-icon svgIcon="triangle-exclamation"></mat-icon>
+                    {{ error() }}
+                </div>
+                }
+
+            </div>
+        </div>
+
+
+        <!-- OUTPUT CARD -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden flex flex-col">
+
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                    Generated TypeScript
+                </span>
+
+                @if (tsOutput()) {
+                <button (click)="copyOutput()" class="h-12 px-5 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600
+                           border border-slate-200 rounded-2xl font-mono text-md
+                           tracking-[0.12em] uppercase transition-all duration-150 cursor-pointer">
+                    Copy
+                </button>
+                }
+            </div>
+
+            <div class="grow bg-slate-900 rounded-2xl p-6 overflow-auto">
+
+                @if (tsOutput()) {
+
+                <pre class="m-0 font-mono text-[13px] leading-relaxed text-indigo-100
+                           select-all whitespace-pre-wrap break-all"> {{ tsOutput() }}
+                </pre>
+
+                } @else {
+
+                <div class="flex flex-col items-center justify-center h-full text-slate-400 gap-4">
+                    <mat-icon class="w-16 h-16 opacity-20" svgIcon="code"></mat-icon>
+                    <p class="font-mono text-sm tracking-wide">
+                        Interface will appear here
+                    </p>
+                </div>
+
+                }
+
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,163 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+    <!-- Header -->
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            Line Difference Highlighter
+        </h2>
+
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            List Comparison
+        </span>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex flex-wrap gap-3">
+        <button (click)="analyze()" [disabled]="!listA() || !listB()"
+            class="h-12 px-6 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]">
+            Analyze
+        </button>
+
+        <button (click)="swap()"
+            class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+            Swap
+        </button>
+
+        <button (click)="clear()"
+            class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+            Clear
+        </button>
+    </div>
+
+    <!-- Inputs -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <!-- List A -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400 mb-4 block">
+                List A
+            </span>
+
+            <div
+                class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                <textarea [(ngModel)]="listA" rows="12" placeholder="One item per line..."
+                    class="w-full font-mono text-sm leading-relaxed bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 resize-none"></textarea>
+            </div>
+        </div>
+
+        <!-- List B -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400 mb-4 block">
+                List B
+            </span>
+
+            <div
+                class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                <textarea [(ngModel)]="listB" rows="12" placeholder="One item per line..."
+                    class="w-full font-mono text-sm leading-relaxed bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 resize-none"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    @if (stats()) {
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-red-200 rounded-2xl">
+            <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-red-400">Missing</span>
+            <span class="font-serif text-4xl italic text-red-600 leading-none tracking-tight">
+                {{ stats()!.missing }}
+            </span>
+        </div>
+
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-green-200 rounded-2xl">
+            <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-green-400">Added</span>
+            <span class="font-serif text-4xl italic text-green-600 leading-none tracking-tight">
+                {{ stats()!.added }}
+            </span>
+        </div>
+
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-amber-200 rounded-2xl">
+            <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-amber-400">Duplicated</span>
+            <span class="font-serif text-4xl italic text-amber-600 leading-none tracking-tight">
+                {{ stats()!.duplicated }}
+            </span>
+        </div>
+
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-blue-200 rounded-2xl">
+            <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-blue-400">Moved</span>
+            <span class="font-serif text-4xl italic text-blue-600 leading-none tracking-tight">
+                {{ stats()!.moved }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        @if (results()!.missing.length) {
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            <div
+                class="px-6 py-3 border-b border-red-100 bg-red-50 text-md font-mono font-semibold uppercase tracking-[0.2em] text-red-500">
+                Missing (in A not in B)
+            </div>
+
+            @for (line of results()!.missing; track line.text) {
+            <div class="px-6 py-2 font-mono text-sm text-red-700 border-b border-red-50 bg-red-50/30">
+                {{ line.text }}
+            </div>
+            }
+        </div>
+        }
+
+        @if (results()!.added.length) {
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            <div
+                class="px-6 py-3 border-b border-green-100 bg-green-50 text-md font-mono font-semibold uppercase tracking-[0.2em] text-green-500">
+                Added (in B not in A)
+            </div>
+
+            @for (line of results()!.added; track line.text) {
+            <div class="px-6 py-2 font-mono text-sm text-green-700 border-b border-green-50 bg-green-50/30">
+                {{ line.text }}
+            </div>
+            }
+        </div>
+        }
+
+        @if (results()!.duplicated.length) {
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            <div
+                class="px-6 py-3 border-b border-amber-100 bg-amber-50 text-md font-mono font-semibold uppercase tracking-[0.2em] text-amber-500">
+                Duplicated
+            </div>
+
+            @for (line of results()!.duplicated; track line.text) {
+            <div class="px-6 py-2 font-mono text-sm text-amber-700 border-b border-amber-50 bg-amber-50/30">
+                {{ line.text }}
+            </div>
+            }
+        </div>
+        }
+
+        @if (results()!.moved.length) {
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            <div
+                class="px-6 py-3 border-b border-blue-100 bg-blue-50 text-md font-mono font-semibold uppercase tracking-[0.2em] text-blue-500">
+                Moved
+            </div>
+
+            @for (line of results()!.moved; track line.text) {
+            <div class="px-6 py-2 font-mono text-sm text-blue-700 border-b border-blue-50 bg-blue-50/30">
+                {{ line.text }}
+            </div>
+            }
+        </div>
+        }
+    </div>
+    }
+</div>

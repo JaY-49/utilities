@@ -1,0 +1,121 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            RegEx Tester
+        </h2>
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Pattern Matching
+        </span>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+        </div>
+
+        <div class="flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+                <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                    Pattern
+                </label>
+
+                <div
+                    class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                    <input [(ngModel)]="pattern" placeholder="\d+"
+                        class="w-full font-mono text-base bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300" />
+                </div>
+
+                <span class="text-md font-mono text-slate-400 tracking-wide">
+                    Enter regex pattern (without delimiters)
+                </span>
+            </div>
+
+            <div class="flex flex-wrap gap-4 items-center">
+                <label class="flex items-center gap-2 font-mono text-sm text-slate-600">
+                    <input type="checkbox" [(ngModel)]="flagGlobal" class="accent-slate-800" />
+                    Global (g)
+                </label>
+
+                <label class="flex items-center gap-2 font-mono text-sm text-slate-600">
+                    <input type="checkbox" [(ngModel)]="flagCaseInsensitive" class="accent-slate-800" />
+                    Case Insensitive (i)
+                </label>
+
+                <label class="flex items-center gap-2 font-mono text-sm text-slate-600">
+                    <input type="checkbox" [(ngModel)]="flagMultiline" class="accent-slate-800" />
+                    Multiline (m)
+                </label>
+
+                <button (click)="pattern.set(''); testString.set('')"
+                    class="ml-auto h-12 px-6 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-500 hover:text-slate-700 font-mono text-md tracking-[0.12em] uppercase">
+                    Clear
+                </button>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                    Test String
+                </label>
+
+                <div
+                    class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                    <textarea [(ngModel)]="testString" rows="6" placeholder="Enter text to test against..."
+                        class="w-full font-mono text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 resize-none"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (error()) {
+    <div
+        class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+        <mat-icon svgIcon="triangle-exclamation"></mat-icon>
+        {{ error() }}
+    </div>
+    }
+
+    @if (pattern() && testString()) {
+    <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-slate-200 rounded-2xl">
+        <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">Matches Found</span>
+        <span class="font-serif text-4xl italic leading-none tracking-tight" [class.text-green-600]="matchCount() > 0"
+            [class.text-slate-400]="matchCount() === 0">
+            {{ matchCount() }}
+        </span>
+    </div>
+
+    @if (matchCount() > 0) {
+    <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+        <div class="px-6 py-3 border-b border-slate-200 bg-slate-50">
+            <span class="text-md font-mono font-semibold uppercase tracking-[0.2em] text-slate-500">
+                Highlighted Result
+            </span>
+        </div>
+
+        <div class="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap" [innerHTML]="highlightedText()"></div>
+    </div>
+
+    <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+        <div class="px-6 py-3 border-b border-pink-100 bg-pink-50">
+            <span class="text-md font-mono font-semibold uppercase tracking-[0.2em] text-pink-600">
+                Match Details
+            </span>
+        </div>
+
+        <div class="overflow-auto max-h-80">
+            @for (m of matches(); track $index) {
+            <div
+                class="flex items-center gap-4 px-6 py-3 border-b border-slate-50 font-mono text-sm hover:bg-slate-50 transition-colors">
+                <span class="text-xs text-slate-400 w-8 shrink-0 font-bold">#{{ $index + 1 }}</span>
+                <span class="text-pink-700 font-semibold bg-pink-50 px-2 py-0.5 rounded">{{
+                    m.match
+                    }}</span>
+                <span class="text-slate-400 text-xs">index: {{ m.index }}</span>
+                @if (m.groups.length) {
+                <span class="text-violet-600 text-xs">groups: {{ m.groups.join(', ') }}</span>
+                }
+            </div>
+            }
+        </div>
+    </div>
+    }
+    }
+</div>

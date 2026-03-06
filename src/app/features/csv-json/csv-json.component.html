@@ -1,0 +1,132 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+    <!-- Header -->
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            CSV ↔ JSON Converter
+        </h2>
+
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Data Transformation
+        </span>
+    </div>
+
+    <!-- MODE + CONTROLS -->
+    <div class="flex flex-wrap items-end gap-6">
+        <!-- Mode Toggle -->
+        <div class="flex flex-col gap-2">
+            <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                Mode
+            </label>
+
+            <div class="flex border border-slate-200 rounded-2xl overflow-hidden">
+                <button (click)="mode.set('csv-to-json')" [class.bg-slate-900]="mode() === 'csv-to-json'"
+                    [class.text-white]="mode() === 'csv-to-json'"
+                    class="px-5 h-12 font-mono text-md uppercase tracking-[0.15em] text-slate-500 hover:bg-slate-50">
+                    CSV → JSON
+                </button>
+
+                <button (click)="mode.set('json-to-csv')" [class.bg-slate-900]="mode() === 'json-to-csv'"
+                    [class.text-white]="mode() === 'json-to-csv'"
+                    class="px-5 h-12 font-mono text-md uppercase tracking-[0.15em] text-slate-500 hover:bg-slate-50">
+                    JSON → CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- DELIMITER -->
+        <div class="flex flex-col gap-2">
+            <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                Delimiter
+            </label>
+
+            <div
+                class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                <input [ngModel]="delimiter()" (ngModelChange)="delimiter.set($event)" placeholder="," maxlength="3"
+                    class="w-20 font-mono text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300" />
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex gap-3 ml-auto">
+            <button (click)="convert()" [disabled]="!input()"
+                class="h-12 px-6 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]">
+                Convert
+            </button>
+
+            <button (click)="swap()" [disabled]="!output()"
+                class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+                Swap
+            </button>
+
+            <button (click)="clear()"
+                class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+                Clear
+            </button>
+        </div>
+    </div>
+
+    @if (error()) {
+    <div
+        class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+        <mat-icon svgIcon="triangle-exclamation"></mat-icon>
+        {{ error() }}
+    </div>
+    }
+
+    <!-- INPUT + OUTPUT -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <!-- INPUT CARD -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <div class="flex flex-col gap-2 mb-4">
+                <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                    {{ mode() === 'csv-to-json' ? 'CSV Input' : 'JSON Input' }}
+                </span>
+            </div>
+
+            <div
+                class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                <textarea [(ngModel)]="input" rows="16"
+                    class="w-full font-mono text-sm leading-relaxed bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 resize-none"></textarea>
+            </div>
+        </div>
+
+        <!-- OUTPUT CARD -->
+        <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden flex flex-col">
+            <div
+                class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+            </div>
+
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                    {{ mode() === 'csv-to-json' ? 'JSON Output' : 'CSV Output' }}
+                </span>
+
+                @if (output()) {
+                <button (click)="copy()"
+                    class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+                    Copy
+                </button>
+                }
+            </div>
+
+            @if (output()) {
+            <div class="bg-slate-900 rounded-2xl p-6 overflow-auto">
+                <pre
+                    class="m-0 font-mono text-[13px] leading-relaxed text-teal-100 select-all whitespace-pre-wrap break-all">
+                    {{ output() }}
+                </pre>
+            </div>
+            } @else {
+            <div class="flex flex-col items-center justify-center min-h-80 text-slate-400 gap-4">
+                <mat-icon class="w-16 h-16 opacity-20" svgIcon="table-columns"></mat-icon>
+
+                <p class="font-mono text-sm tracking-wide">Output will appear here</p>
+            </div>
+            }
+        </div>
+    </div>
+</div>

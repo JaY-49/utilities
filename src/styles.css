@@ -1,0 +1,90 @@
+/* Angular Material pre-built theme (Indigo/Pink) */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+/* Tailwind CSS v4 */
+@import 'tailwindcss';
+
+/* ─── Global Reset & Base ────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #f8fafc;
+  color: #1a202c;
+}
+
+/* ─── Material Overrides ─────────────────────────────────────── */
+
+/* Give mat-tab-group a clean transparent background */
+.mat-mdc-tab-group {
+  --mdc-tab-indicator-active-indicator-color: #7c3aed;
+  --mat-tab-header-active-label-text-color: #7c3aed;
+  --mat-tab-header-active-ripple-color: #7c3aed;
+  --mat-tab-header-inactive-ripple-color: #7c3aed;
+  --mat-tab-header-active-focus-indicator-color: #7c3aed;
+  --mat-tab-header-active-hover-indicator-color: #7c3aed;
+}
+
+/* Keep mat-card padding comfortable on all screen sizes */
+.mat-mdc-card-content:last-child {
+  padding-bottom: 1rem !important;
+}
+
+.mat-mdc-card-content {
+  padding: 1.25rem !important;
+}
+
+/* ─── Shared Animations ───────────────────────────────────────── */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Utilities ────────────────────────────────────────────── */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #e2e8f0 transparent;
+}

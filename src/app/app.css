@@ -1,0 +1,53 @@
+/* All styles migrated to Tailwind utility classes in app.html */
+
+.nav-item {
+  margin-bottom: 4px !important;
+  border-radius: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+.nav-item:hover {
+  background-color: rgba(99, 102, 241, 0.05) !important;
+}
+
+.nav-active {
+  background-color: #ede9fe !important; /* violet-100 */
+}
+
+.nav-active mat-icon {
+  color: #7c3aed !important; /* violet-600 */
+}
+
+.nav-active .mdc-list-item__primary-text {
+  color: #4c1d95 !important; /* violet-900 */
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  display: none !important;
+}
+
+/* Centering icons in collapsed sidebar */
+::ng-deep .collapsed-sidebar .nav-item .mdc-list-item__content {
+  display: flex !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+::ng-deep .collapsed-sidebar .nav-item .mat-mdc-list-item-icon {
+  margin-right: 0 !important;
+  /* Ensure the icon is centered within the highlight-box */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+::ng-deep .collapsed-sidebar .nav-item {
+  /* Set a consistent height so the icons have breathing room vertically */
+  min-height: 48px !important;
+}

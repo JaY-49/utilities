@@ -1,0 +1,170 @@
+<div class="mx-auto max-w-full w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+    <!-- Header -->
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            Time Calculator
+        </h2>
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Duration Analysis
+        </span>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+        <!-- Top shimmer line -->
+        <div class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="calculate()" novalidate class="flex flex-col gap-6">
+            <!-- Time Inputs -->
+            <div class="grid grid-cols-[1fr_2rem_1fr] items-end gap-3">
+                <!-- Start -->
+                <div class="flex flex-col gap-2">
+                    <label
+                        class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">Start</label>
+                    <div class="flex items-center justify-center px-4 py-3.5 bg-slate-50 rounded-2xl border transition-all duration-200"
+                        [ngClass]="{
+              'border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50':
+                !form.hasError('endBeforeStart'),
+              'border-red-300 bg-red-50/40 ring-4 ring-red-50':
+                form.hasError('endBeforeStart') && form.touched,
+            }">
+                        <input type="number" formControlName="startH" placeholder="09" min="0" max="23"
+                            class="w-10 text-2xl font-mono font-medium text-center bg-transparent border-none outline-none text-slate-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-slate-300" />
+                        <span class="text-xl font-light text-slate-300 mx-0.5">:</span>
+                        <input type="number" formControlName="startM" placeholder="00" min="0" max="59"
+                            class="w-10 text-2xl font-mono font-medium text-center bg-transparent border-none outline-none text-slate-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-slate-300" />
+                    </div>
+                </div>
+
+                <!-- Arrow -->
+                <div class="flex items-center justify-center pb-4 text-slate-300">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 7h10M8 3l4 4-4 4" />
+                    </svg>
+                </div>
+
+                <!-- End -->
+                <div class="flex flex-col gap-2">
+                    <label
+                        class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">End</label>
+                    <div class="flex items-center justify-center px-4 py-3.5 bg-slate-50 rounded-2xl border transition-all duration-200"
+                        [ngClass]="{
+              'border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50':
+                !form.hasError('endBeforeStart'),
+              'border-red-300 bg-red-50/40 ring-4 ring-red-50':
+                form.hasError('endBeforeStart') && form.touched,
+            }">
+                        <input type="number" formControlName="endH" placeholder="18" min="0" max="23"
+                            class="w-10 text-2xl font-mono font-medium text-center bg-transparent border-none outline-none text-slate-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-slate-300" />
+                        <span class="text-xl font-light text-slate-300 mx-0.5">:</span>
+                        <input type="number" formControlName="endM" placeholder="30" min="0" max="59"
+                            class="w-10 text-2xl font-mono font-medium text-center bg-transparent border-none outline-none text-slate-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-slate-300" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error -->
+            @if (form.hasError('endBeforeStart') && form.touched) {
+            <div
+                class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                    <path
+                        d="M6 1a5 5 0 1 0 0 10A5 5 0 0 0 6 1zm0 7.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5zM5.25 5V3.5a.75.75 0 0 1 1.5 0V5a.75.75 0 0 1-1.5 0z" />
+                </svg>
+                End time must be after start time.
+            </div>
+            }
+
+            <!-- Actions -->
+            <div class="flex gap-3">
+                <button type="submit"
+                    class="flex-1 h-12 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97] cursor-pointer">
+                    Calculate
+                </button>
+                <button type="button" (click)="reset()"
+                    class="h-12 px-5 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150 cursor-pointer">
+                    Reset
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    @if (result()) {
+    <div class="grid grid-cols-3 gap-3 animate-[fadeUp_0.4s_cubic-bezier(0.16,1,0.3,1)_both]">
+        <!-- Hours -->
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-slate-200 rounded-2xl">
+            <span class="text-md font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">Hours</span>
+            <span class="font-serif text-4xl italic text-slate-800 leading-none tracking-tight">
+                {{ result()!.hours }}
+            </span>
+            <span class="text-md font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">hr</span>
+        </div>
+
+        <!-- Minutes -->
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-slate-200 rounded-2xl">
+            <span class="text-md font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">Minutes</span>
+            <span class="font-serif text-4xl italic text-slate-800 leading-none tracking-tight">{{
+                result()!.minutes
+                }}</span>
+            <span class="text-md font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">min</span>
+        </div>
+
+        <!-- Total — accent -->
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-slate-900 border border-slate-900 rounded-2xl">
+            <span class="text-md font-mono font-semibold tracking-[0.2em] uppercase text-slate-500">Total</span>
+            <span class="font-serif text-4xl italic text-white leading-none tracking-tight">{{
+                result()!.totalMinutes
+                }}</span>
+            <span class="text-md font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">min</span>
+        </div>
+
+        <!-- Empty state -->
+        @if (result()!.totalMinutes === 0) {
+        <div class="col-span-3 text-center text-md font-mono italic text-slate-400 py-1">
+            Times are identical — no duration.
+        </div>
+        }
+    </div>
+    }
+</div>
+
+<style>
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes shake {
+
+        10%,
+        90% {
+            transform: translateX(-2px);
+        }
+
+        20%,
+        80% {
+            transform: translateX(3px);
+        }
+
+        30%,
+        50%,
+        70% {
+            transform: translateX(-3px);
+        }
+
+        40%,
+        60% {
+            transform: translateX(3px);
+        }
+    }
+</style>

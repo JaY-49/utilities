@@ -1,0 +1,180 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            File Converter
+        </h2>
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Browser Conversion
+        </span>
+    </div>
+
+    <!-- Conversion Matrix -->
+    <div class="flex flex-wrap gap-2">
+        <span
+            class="px-3 py-1 rounded-full text-md font-mono font-medium bg-violet-50 text-violet-700 border border-violet-200">PNG
+            ↔ JPG</span>
+        <span
+            class="px-3 py-1 rounded-full text-md font-mono font-medium bg-violet-50 text-violet-700 border border-violet-200">Image
+            → PDF</span>
+        <span
+            class="px-3 py-1 rounded-full text-md font-mono font-medium bg-violet-50 text-violet-700 border border-violet-200">CSV
+            → XLSX</span>
+        <span
+            class="px-3 py-1 rounded-full text-md font-mono font-medium bg-violet-50 text-violet-700 border border-violet-200">XLSX
+            → CSV</span>
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden cursor-pointer transition-all duration-200 flex items-center justify-center min-h-40"
+        [class.border-violet-400]="isDragOver()" [class.bg-violet-50]="isDragOver()" [class.min-h-20]="selectedFile()"
+        (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)" (click)="fileInput.click()"
+        role="button" tabindex="0" (keydown.enter)="fileInput.click()"
+        aria-label="File upload area. Click or drag a file here.">
+
+        <div class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+        </div>
+
+        <input #fileInput type="file" class="hidden" accept=".png,.jpg,.jpeg,.csv,.xlsx"
+            (change)="onFileSelected($event)" />
+
+        @if (!selectedFile()) {
+
+        <div class="flex flex-col items-center gap-2 p-6 pointer-events-none text-center">
+            <div class="w-16 h-16 rounded-full bg-violet-100 flex items-center justify-center mb-2">
+                <mat-icon class="text-[2rem] w-8 h-8 text-violet-700" svgIcon="cloud-arrow-up"></mat-icon>
+            </div>
+            <p class="m-0 text-sm font-mono text-slate-700">Drop a file here or click to browse</p>
+            <p class="m-0 text-md font-mono text-slate-400">PNG, JPG, CSV, XLSX · Max {{ maxSizeMb }} MB</p>
+        </div>
+
+        } @else {
+
+        <div class="flex items-center gap-4 px-4 py-3 w-full">
+            <mat-icon class="text-violet-700 text-[2rem] w-8 h-8 shrink-0" svgIcon="file"></mat-icon>
+
+            <div class="flex-1 min-w-0">
+                <span class="block font-mono text-sm text-slate-800 truncate">{{ selectedFile()!.name }}</span>
+                <span class="block text-md font-mono text-slate-400 mt-0.5">
+                    {{ fileSizeMb() }} MB · {{ selectedFile()!.type }}
+                </span>
+            </div>
+
+            <button
+                class="h-12 px-6 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150"
+                (click)="$event.stopPropagation(); reset()">
+                Remove
+            </button>
+        </div>
+
+        }
+
+    </div>
+
+    <!-- Error -->
+    @if (errorMessage()) {
+    <div
+        class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+        <mat-icon svgIcon="circle-exclamation"></mat-icon>
+        <span class="flex-1">{{ errorMessage() }}</span>
+        <button
+            class="h-10 px-5 bg-transparent hover:bg-red-100 text-red-500 border border-red-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase"
+            (click)="errorMessage.set(null)">
+            Dismiss
+        </button>
+    </div>
+    }
+
+    <!-- Options -->
+    @if (selectedFile() && !errorMessage()) {
+
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+
+        <div class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+        </div>
+
+        @if (availableFormats().length === 0) {
+
+        <p class="flex items-center gap-2 text-slate-400 text-sm font-mono m-0">
+            <mat-icon svgIcon="circle-info"></mat-icon>
+            No supported conversions for this file type.
+        </p>
+
+        } @else {
+
+        <div class="flex items-start gap-4 flex-col sm:flex-row">
+
+            <mat-form-field appearance="outline" class="flex-1 w-full">
+                <mat-label>Convert to</mat-label>
+                <mat-icon matPrefix svgIcon="right-left"></mat-icon>
+
+                <mat-select [(ngModel)]="$any(selectedFormat)" (ngModelChange)="selectedFormat.set($event)"
+                    [ngModel]="selectedFormat()">
+
+                    @for (opt of availableFormats(); track opt.value) {
+                    <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                    }
+
+                </mat-select>
+            </mat-form-field>
+
+            <button
+                class="mt-1 h-12 px-8 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97]"
+                [disabled]="!selectedFormat() || isLoading()" (click)="convert()">
+
+                @if (isLoading()) {
+                <span class="flex items-center gap-2">
+                    <mat-spinner diameter="20"></mat-spinner>
+                    Converting…
+                </span>
+                } @else {
+                Convert
+                }
+
+            </button>
+
+        </div>
+
+        }
+
+    </div>
+
+    }
+
+    <!-- Success -->
+    @if (result()) {
+
+    <div class="bg-white border border-green-200 rounded-3xl shadow-sm p-6 animate-[fadeUp_0.3s_ease]">
+
+        <div class="flex items-center gap-4 flex-wrap">
+
+            <mat-icon class="text-[2.5rem] w-10 h-10 text-green-600" svgIcon="circle-check"></mat-icon>
+
+            <div class="flex-1 min-w-0">
+                <p class="m-0 font-mono text-sm text-green-700">Conversion complete!</p>
+                <p class="m-0 text-md font-mono text-green-800 truncate">{{ result()!.filename }}</p>
+            </div>
+
+            <div class="flex gap-2 flex-wrap">
+
+                <button
+                    class="h-12 px-8 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md tracking-[0.15em] uppercase"
+                    (click)="download()">
+                    Download
+                </button>
+
+                <button
+                    class="h-12 px-6 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase"
+                    (click)="reset()">
+                    Convert Another
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    }
+
+</div>

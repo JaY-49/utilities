@@ -1,0 +1,137 @@
+<div class="mx-auto max-w-6xl w-full flex flex-col gap-8 animate-[fadeUp_0.5s_cubic-bezier(0.16,1,0.3,1)_both]">
+    <!-- Header -->
+    <div class="flex items-end justify-between">
+        <h2 class="font-serif text-4xl italic tracking-tight text-slate-900 leading-none">
+            JSON Viewer & Analyzer
+        </h2>
+
+        <span class="text-md font-mono font-medium tracking-[0.18em] uppercase text-slate-400 pb-1">
+            Data Explorer
+        </span>
+    </div>
+
+    <!-- INPUT CARD -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+        </div>
+
+        <div class="flex flex-col gap-6">
+            <!-- JSON INPUT -->
+            <div class="flex flex-col gap-2">
+                <label class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                    JSON Input
+                </label>
+
+                <div
+                    class="px-4 py-3.5 bg-slate-50 rounded-2xl border border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50 transition-all duration-200">
+                    <textarea [(ngModel)]="rawInput" rows="8" placeholder='{"key":"value"}'
+                        class="w-full font-mono text-sm bg-transparent border-none outline-none text-slate-800 placeholder:text-slate-300 leading-relaxed resize-none"></textarea>
+                </div>
+
+                <p class="text-md font-mono text-slate-400 tracking-wide">
+                    Supports Objects, Arrays and nested structures
+                </p>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex flex-wrap gap-3">
+                <button (click)="analyze()" [disabled]="!rawInput()"
+                    class="h-12 px-6 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97] cursor-pointer">
+                    Analyze
+                </button>
+
+                <button (click)="formatInput()" [disabled]="!rawInput()"
+                    class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+                    Format
+                </button>
+
+                <button (click)="clear()"
+                    class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+                    Clear
+                </button>
+
+                @if (parsedData()) {
+                <button (click)="copyFormatted()"
+                    class="ml-auto h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+                    Copy Pretty
+                </button>
+                }
+            </div>
+
+            @if (error()) {
+            <div
+                class="flex items-center gap-2 px-3.5 py-2.5 bg-red-50 border border-red-100 rounded-xl text-red-400 text-md font-mono tracking-wide animate-[shake_0.3s_ease]">
+                <mat-icon svgIcon="triangle-exclamation"></mat-icon>
+                {{ error() }}
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- STATS -->
+    @if (stats()) {
+    <div class="grid grid-cols-4 gap-3 animate-[fadeUp_0.4s_cubic-bezier(0.16,1,0.3,1)_both]">
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-slate-200 rounded-2xl">
+            <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">Type</span>
+            <span class="font-serif text-4xl italic text-slate-800 leading-none tracking-tight">
+                {{ stats()!.type }}
+            </span>
+        </div>
+
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-slate-200 rounded-2xl">
+            <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">Items</span>
+            <span class="font-serif text-4xl italic text-slate-800 leading-none tracking-tight">
+                {{ stats()!.itemCount }}
+            </span>
+        </div>
+
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-slate-200 rounded-2xl">
+            <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">Depth</span>
+            <span class="font-serif text-4xl italic text-slate-800 leading-none tracking-tight">
+                {{ stats()!.depth }}
+            </span>
+        </div>
+
+        <div class="flex flex-col items-center gap-1.5 p-5 bg-white border border-slate-200 rounded-2xl">
+            <span class="text-[9px] font-mono font-semibold tracking-[0.2em] uppercase text-slate-400">Size</span>
+            <span class="font-serif text-4xl italic text-slate-800 leading-none tracking-tight">
+                {{ formatSize(stats()!.fileSize) }}
+            </span>
+        </div>
+    </div>
+
+    <!-- OUTPUT CARD -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-slate-200 to-transparent">
+        </div>
+
+        <div class="flex items-center justify-between mb-6">
+            <span class="text-md font-mono font-semibold tracking-[0.18em] uppercase text-slate-400">
+                Explorer
+            </span>
+
+            <div class="flex gap-2">
+                <button (click)="viewMode.set('tree')"
+                    class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+                    Tree
+                </button>
+
+                <button (click)="viewMode.set('text')"
+                    class="h-12 px-5 border border-slate-200 rounded-2xl bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 font-mono text-md tracking-[0.12em] uppercase">
+                    Text
+                </button>
+            </div>
+        </div>
+
+        @if (viewMode() === 'tree') {
+        <div class="bg-slate-50 rounded-2xl border border-slate-200 p-8 overflow-auto max-h-187.5">
+            <app-json-node key="root" [value]="parsedData()"></app-json-node>
+        </div>
+        } @else {
+        <div class="bg-slate-900 rounded-2xl p-6 overflow-auto max-h-187.5">
+            <pre class="font-mono text-[13px] leading-relaxed text-indigo-100 select-all">{{ formattedJson() }}</pre>
+        </div>
+        }
+    </div>
+    }
+</div>
