@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { afterNextRender, Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import {
     FormBuilder,
     FormGroup,
@@ -7,13 +7,14 @@ import {
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 
 import { TimeCalculatorService } from '../../core/services/time-calculator.service';
 import { TimeDiff } from '../../core/models/file-converter.models';
+
+type TimeField = 'startH' | 'startM' | 'endH' | 'endM';
 
 @Component({
     selector: 'app-time-calculator',
@@ -23,7 +24,6 @@ import { TimeDiff } from '../../core/models/file-converter.models';
         ReactiveFormsModule,
         MatFormFieldModule,
         MatInputModule,
-        MatButtonModule,
         MatIconModule,
         MatCardModule,
     ],
@@ -32,11 +32,15 @@ import { TimeDiff } from '../../core/models/file-converter.models';
 export class TimeCalculatorComponent {
     private readonly fb = inject(FormBuilder);
     private readonly timeSvc = inject(TimeCalculatorService);
+    readonly startHInput = viewChild.required<ElementRef<HTMLInputElement>>('startHInput');
+    readonly startMInput = viewChild.required<ElementRef<HTMLInputElement>>('startMInput');
+    readonly endHInput = viewChild.required<ElementRef<HTMLInputElement>>('endHInput');
+    readonly endMInput = viewChild.required<ElementRef<HTMLInputElement>>('endMInput');
 
     /** Reactive form with separate hour/minute inputs and cross-field validation */
     form: FormGroup = this.fb.group(
         {
-            startH: ['9', [Validators.required, Validators.min(0), Validators.max(23)]],
+            startH: ['09', [Validators.required, Validators.min(0), Validators.max(23)]],
             startM: ['00', [Validators.required, Validators.min(0), Validators.max(59)]],
             endH: ['18', [Validators.required, Validators.min(0), Validators.max(23)]],
             endM: ['30', [Validators.required, Validators.min(0), Validators.max(59)]],
@@ -46,7 +50,13 @@ export class TimeCalculatorComponent {
 
     /** Computed result; null until a successful calculation */
     result = signal<TimeDiff | null>(null);
-    submitted = signal(false);
+
+    constructor() {
+        afterNextRender(() => {
+            this.focusField('startH');
+            this.recalculateResult();
+        });
+    }
 
     // Helpers for template access
     get startH() { return this.form.get('startH')!; }
@@ -72,10 +82,27 @@ export class TimeCalculatorComponent {
         };
     }
 
-    calculate(): void {
-        this.submitted.set(true);
-        this.form.markAllAsTouched();
+    handleTimeInput(controlName: TimeField, event: Event, nextField?: TimeField): void {
+        const input = event.target as HTMLInputElement;
+        const digits = input.value.replace(/\D/g, '').slice(0, 2);
+        const control = this.form.get(controlName);
 
+        if (input.value !== digits) {
+            input.value = digits;
+        }
+
+        if (control && control.value !== digits) {
+            control.setValue(digits, { emitEvent: false });
+        }
+
+        this.recalculateResult();
+
+        if (digits.length === 2 && nextField) {
+            queueMicrotask(() => this.focusField(nextField));
+        }
+    }
+
+    private recalculateResult(): void {
         if (this.form.invalid) {
             this.result.set(null);
             return;
@@ -88,14 +115,25 @@ export class TimeCalculatorComponent {
         this.result.set(diff);
     }
 
-    reset(): void {
-        this.form.reset({
-            startH: '9',
-            startM: '00',
-            endH: '18',
-            endM: '20'
-        });
-        this.submitted.set(false);
-        this.result.set(null);
+    private focusField(field: TimeField): void {
+        this.focusAndSelect(this.getInput(field));
+    }
+
+    private getInput(field: TimeField): HTMLInputElement {
+        switch (field) {
+            case 'startH':
+                return this.startHInput().nativeElement;
+            case 'startM':
+                return this.startMInput().nativeElement;
+            case 'endH':
+                return this.endHInput().nativeElement;
+            case 'endM':
+                return this.endMInput().nativeElement;
+        }
+    }
+
+    private focusAndSelect(input: HTMLInputElement): void {
+        input.focus();
+        input.select();
     }
 }

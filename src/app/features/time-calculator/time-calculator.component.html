@@ -12,7 +12,7 @@
     <div
         class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm relative overflow-hidden grid grid-cols-2 items-center gap-8">
 
-        <form [formGroup]="form" (ngSubmit)="calculate()" novalidate class="flex flex-col gap-6">
+        <form [formGroup]="form" novalidate class="flex flex-col gap-6">
 
             <div class="grid grid-cols-[1fr_2rem_1fr] items-end gap-3">
 
@@ -24,10 +24,12 @@
                           'border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50':
                             !form.hasError('endBeforeStart'),'border-red-300 bg-red-50/40 ring-4 ring-red-50': form.hasError('endBeforeStart') && form.touched,
                         }">
-                        <input type="number" formControlName="startH" placeholder="09" min="0" max="23"
+                        <input #startHInput type="text" inputmode="numeric" maxlength="2" autocomplete="off"
+                            formControlName="startH" placeholder="09" (input)="handleTimeInput('startH', $event, 'startM')"
                             class="w-10 text-2xl font-mono font-medium text-center bg-transparent border-none outline-none text-slate-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-slate-300" />
                         <span class="text-xl font-light text-slate-300 mx-0.5">:</span>
-                        <input type="number" formControlName="startM" placeholder="00" min="0" max="59"
+                        <input #startMInput type="text" inputmode="numeric" maxlength="2" autocomplete="off"
+                            formControlName="startM" placeholder="00" (input)="handleTimeInput('startM', $event, 'endH')"
                             class="w-10 text-2xl font-mono font-medium text-center bg-transparent border-none outline-none text-slate-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-slate-300" />
                     </div>
                 </div>
@@ -47,10 +49,12 @@
                           'border-slate-200 focus-within:border-blue-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-50':
                             !form.hasError('endBeforeStart'), 'border-red-300 bg-red-50/40 ring-4 ring-red-50': form.hasError('endBeforeStart') && form.touched,
                         }">
-                        <input type="number" formControlName="endH" placeholder="18" min="0" max="23"
+                        <input #endHInput type="text" inputmode="numeric" maxlength="2" autocomplete="off"
+                            formControlName="endH" placeholder="18" (input)="handleTimeInput('endH', $event, 'endM')"
                             class="w-10 text-2xl font-mono font-medium text-center bg-transparent border-none outline-none text-slate-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-slate-300" />
                         <span class="text-xl font-light text-slate-300 mx-0.5">:</span>
-                        <input type="number" formControlName="endM" placeholder="30" min="0" max="59"
+                        <input #endMInput type="text" inputmode="numeric" maxlength="2" autocomplete="off"
+                            formControlName="endM" placeholder="30" (input)="handleTimeInput('endM', $event)"
                             class="w-10 text-2xl font-mono font-medium text-center bg-transparent border-none outline-none text-slate-800 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none placeholder:text-slate-300" />
                     </div>
                 </div>
@@ -67,16 +71,6 @@
             </div>
             }
 
-            <div class="flex gap-3">
-                <button type="submit"
-                    class="flex-1 h-12 bg-slate-900 hover:bg-slate-700 text-white rounded-2xl font-mono text-md font-medium tracking-[0.15em] uppercase transition-all duration-150 active:scale-[0.97] cursor-pointer">
-                    Calculate
-                </button>
-                <button type="button" (click)="reset()"
-                    class="h-12 px-5 bg-transparent hover:bg-slate-50 text-slate-400 hover:text-slate-600 border border-slate-200 rounded-2xl font-mono text-md tracking-[0.12em] uppercase transition-all duration-150 cursor-pointer">
-                    Reset
-                </button>
-            </div>
         </form>
 
         @if (result()) {

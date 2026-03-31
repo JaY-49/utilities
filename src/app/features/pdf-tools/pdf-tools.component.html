@@ -1,0 +1,232 @@
+<div class="flex items-center justify-between mb-6">
+    @if (activeTool()) {
+    <div class="flex items-center gap-3">
+        <button mat-icon-button (click)="backToDashboard()">
+            <mat-icon svgIcon="arrow-left"></mat-icon>
+        </button>
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-serif italic text-slate-800 tracking-tight">
+                {{ activeTool()!.name }}
+            </h1>
+            <p class="text-sm text-slate-500 mt-0.5">{{ activeTool()!.description }}</p>
+        </div>
+    </div>
+    } @else {
+    <h1 class="text-2xl sm:text-3xl font-serif italic text-slate-800 tracking-tight">
+        PDF Tools
+    </h1>
+    }
+    <span class="text-[11px] font-mono uppercase tracking-[0.2em] text-slate-400 hidden sm:block">
+        Browser Processing
+    </span>
+</div>
+
+@if (!activeTool()) {
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    @for (tool of tools; track tool.id) {
+    <button (click)="selectTool(tool)" class="group relative flex flex-col items-center justify-center gap-3 p-6 rounded-2xl
+               bg-white border border-slate-200 shadow-sm cursor-pointer
+               transition-all duration-300 hover:shadow-lg hover:scale-[1.03] hover:border-transparent
+               focus:outline-none focus:ring-2 focus:ring-emerald-300">
+        <div class="absolute top-0 left-0 right-0 h-1 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            [style.background]="tool.gradient"></div>
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300"
+            [style.background]="tool.gradient">
+            <mat-icon [svgIcon]="tool.icon" class="text-white"></mat-icon>
+        </div>
+        <span class="font-mono font-semibold text-xs uppercase tracking-wider text-slate-700 text-center">
+            {{ tool.name }}
+        </span>
+        <span class="text-[11px] text-slate-400 text-center leading-tight">{{ tool.description }}</span>
+    </button>
+    }
+</div>
+}
+
+@if (activeTool()) {
+<div class="space-y-6">
+
+    @if (status() === 'idle' || status() === 'error') {
+
+    <!-- Upload Area -->
+    <div class="relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300 cursor-pointer"
+        [class]="isDragOver() ? 'border-violet-400 bg-violet-50 scale-[1.01]' : 'border-slate-300 bg-white hover:border-violet-300 hover:bg-slate-50'"
+        (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)" (click)="fileInput.click()">
+
+        <input #fileInput type="file" class="hidden" [accept]="activeTool()!.acceptedMimes.join(',')"
+            [multiple]="activeTool()!.supportsMultiFile" (change)="onFileSelected($event)" />
+
+        <mat-icon svgIcon="down-from-bracket" class="mx-auto mb-3"
+            [class]="isDragOver() ? 'text-violet-500' : 'text-slate-400'"></mat-icon>
+        <p class="text-sm font-medium text-slate-600">
+            Drop PDFs here or <span class="text-violet-600 underline">click to browse</span>
+        </p>
+        <p class="text-xs text-slate-400 mt-1">
+            Max {{ activeTool()!.maxFileSizeMb }} MB
+            @if (activeTool()!.supportsMultiFile) {
+            · Up to {{ activeTool()!.maxFiles }} files
+            }
+        </p>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+        <mat-icon svgIcon="octagon-xmark" class="shrink-0"></mat-icon>
+        {{ errorMessage() }}
+    </div>
+    }
+
+    @if (hasFiles()) {
+    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <span class="text-xs font-mono font-semibold uppercase tracking-wider text-slate-500">
+                {{ files().length }} file{{ files().length > 1 ? 's' : '' }}
+            </span>
+            <span class="text-xs text-slate-400">Total: {{ formatFileSize(totalSize()) }}</span>
+        </div>
+        @for (item of files(); track item.id) {
+        <div
+            class="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition">
+            <mat-icon svgIcon="file-pdf" class="text-red-500 shrink-0"></mat-icon>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm text-slate-700 truncate">{{ item.file.name }}</p>
+                <p class="text-xs text-slate-400">{{ formatFileSize(item.file.size) }}</p>
+            </div>
+            <button mat-icon-button (click)="removeFile(item.id)" matTooltip="Remove">
+                <mat-icon svgIcon="trash-can"></mat-icon>
+            </button>
+        </div>
+        }
+    </div>
+
+    <!-- Tool Options (Moved to bottom) -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        @switch (activeTool()!.id) {
+        @case ('compress') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Quality: {{ (compressQuality() * 100) | number:'1.0-0' }}%
+        </label>
+        <input type="range" min="0.1" max="1" step="0.05" class="w-full accent-violet-600" [ngModel]="compressQuality()"
+            (ngModelChange)="compressQuality.set($event)" />
+        <p class="text-xs text-slate-400 mt-1">Lower quality = smaller file size</p>
+        }
+
+        @case ('split') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Page Range
+        </label>
+        <input type="text"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-violet-400 focus:ring-2 focus:ring-violet-100 outline-none"
+            placeholder="e.g. 1-3, 5, 8-10" [ngModel]="splitRange()" (ngModelChange)="splitRange.set($event)" />
+        <p class="text-xs text-slate-400 mt-2">Leave empty to extract all pages as individual files.</p>
+        }
+
+        @case ('pdf-to-image') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Output Format
+        </label>
+        <div class="flex gap-3">
+            <button (click)="imageFormat.set('png')"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all"
+                [class]="imageFormat() === 'png' ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-slate-200 text-slate-500 hover:border-violet-300'">
+                PNG
+            </button>
+            <button (click)="imageFormat.set('jpg')"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all"
+                [class]="imageFormat() === 'jpg' ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-slate-200 text-slate-500 hover:border-violet-300'">
+                JPG
+            </button>
+        </div>
+        }
+
+        @case ('rotate') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Rotation
+        </label>
+        <div class="flex gap-3">
+            @for (deg of [90, 180, 270]; track deg) {
+            <button (click)="rotationDegrees.set(deg)"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all"
+                [class]="rotationDegrees() === deg ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-slate-200 text-slate-500 hover:border-violet-300'">
+                {{ deg }}°
+            </button>
+            }
+        </div>
+        }
+
+        @default {
+        <p class="text-sm text-slate-500">Ready to process your files.</p>
+        }
+        }
+    </div>
+
+    <button mat-flat-button (click)="process()" class="!w-full !py-3 !rounded-xl !text-sm !font-mono !font-semibold !uppercase !tracking-wider
+               !bg-gradient-to-r !from-indigo-600 !to-violet-600 !text-white !shadow-md
+               hover:!shadow-lg hover:!scale-[1.01] !transition-all !duration-200">
+        <mat-icon svgIcon="arrow-right-long" class="mr-2"></mat-icon>
+        Process {{ files().length }} file{{ files().length > 1 ? 's' : '' }}
+    </button>
+    }
+    }
+
+
+    @if (status() === 'processing') {
+    <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center">
+        <mat-progress-bar mode="indeterminate" class="!rounded-full mb-6"></mat-progress-bar>
+        <p class="text-sm font-medium text-slate-600">Processing your files…</p>
+        <p class="text-xs text-slate-400 mt-1">This may take a moment for larger files</p>
+    </div>
+    }
+
+
+    @if (status() === 'done' && results().length > 0) {
+    <div class="bg-white border border-emerald-200 rounded-2xl shadow-sm overflow-hidden">
+        <div
+            class="px-5 py-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-200 flex items-center gap-3">
+            <mat-icon svgIcon="check-double" style="color: #006061;"></mat-icon>
+            <div>
+                <p class="text-sm font-semibold text-emerald-800">Processing Complete</p>
+                <p class="text-xs text-emerald-600">{{ results().length }} file{{ results().length > 1 ? 's' : '' }}
+                    ready</p>
+            </div>
+        </div>
+
+        @for (r of results(); track r.filename; let i = $index) {
+        <div class="flex items-center gap-3 px-5 py-3 border-b border-slate-100 last:border-b-0">
+            <mat-icon svgIcon="file" class="text-emerald-500 shrink-0"></mat-icon>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm text-slate-700 truncate">{{ r.filename }}</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-xs text-slate-400">
+                        {{ formatFileSize(r.originalSize) }} → {{ formatFileSize(r.resultSize) }}
+                    </p>
+                    @if (r.resultSize < r.originalSize) { <span
+                        class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        {{ (((r.originalSize - r.resultSize) / r.originalSize) * 100) | number:'1.0-0' }}% smaller
+                        </span>
+                        }
+                </div>
+            </div>
+            <button mat-icon-button (click)="downloadSingle(r)" matTooltip="Download"
+                class="hover:bg-emerald-50 transition">
+                <mat-icon svgIcon="down-from-bracket" class="text-emerald-600"></mat-icon>
+            </button>
+        </div>
+        }
+
+        <div class="px-5 py-4 bg-slate-50 flex gap-3">
+            <button mat-flat-button (click)="downloadAll()" class="flex-1 !rounded-xl !py-2.5 !text-sm !font-mono !font-semibold !uppercase !tracking-wider
+                       !bg-gradient-to-r !from-emerald-600 !to-teal-600 !text-white">
+                <mat-icon svgIcon="down-from-bracket" class="mr-2"></mat-icon>
+                Download All
+            </button>
+            <button mat-stroked-button (click)="startOver()"
+                class="!rounded-xl !py-2.5 !text-sm !font-mono !font-semibold !uppercase !tracking-wider !border-slate-300">
+                Start Over
+            </button>
+        </div>
+    </div>
+    }
+
+</div>
+}

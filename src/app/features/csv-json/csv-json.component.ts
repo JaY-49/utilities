@@ -67,7 +67,7 @@ export class CsvJsonComponent {
         const text = this.input().trim();
         if (!text) throw new Error('Input is empty');
 
-        const data = JSON.parse(text);
+        const data = this.parseJsonLikeInput(text);
         if (!Array.isArray(data)) throw new Error('JSON must be an array of objects');
         if (data.length === 0) throw new Error('JSON array is empty');
 
@@ -88,6 +88,18 @@ export class CsvJsonComponent {
         }
 
         this.output.set(rows.join('\n'));
+    }
+
+    private parseJsonLikeInput(input: string): any {
+        try {
+            return JSON.parse(input);
+        } catch {
+            return JSON.parse(this.quoteBareObjectKeys(input));
+        }
+    }
+
+    private quoteBareObjectKeys(input: string): string {
+        return input.replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g, '$1"$2"$3');
     }
 
     private parseCsvLine(line: string, delim: string): string[] {

@@ -1,0 +1,368 @@
+<div class="flex items-center justify-between mb-6">
+    @if (activeTool()) {
+    <div class="flex items-center gap-3">
+        <button mat-icon-button (click)="backToDashboard()">
+            <mat-icon svgIcon="arrow-left"></mat-icon>
+        </button>
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-serif italic text-slate-800 tracking-tight">
+                {{ activeTool()!.name }}
+            </h1>
+            <p class="text-sm text-slate-500 mt-0.5">{{ activeTool()!.description }}</p>
+        </div>
+    </div>
+    } @else {
+    <h1 class="text-2xl sm:text-3xl font-serif italic text-slate-800 tracking-tight">
+        Image Tools
+    </h1>
+    }
+    <span class="text-[11px] font-mono uppercase tracking-[0.2em] text-slate-400 hidden sm:block">
+        Browser Processing
+    </span>
+</div>
+
+@if (!activeTool()) {
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    @for (tool of tools; track tool.id) {
+    <button (click)="selectTool(tool)" class="group relative flex flex-col items-center justify-center gap-3 p-6 rounded-2xl
+               bg-white border border-slate-200 shadow-sm cursor-pointer
+               transition-all duration-300 hover:shadow-lg hover:scale-[1.03] hover:border-transparent
+               focus:outline-none focus:ring-2 focus:ring-indigo-300">
+        <div class="absolute top-0 left-0 right-0 h-1 rounded-t-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            [style.background]="tool.gradient"></div>
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300"
+            [style.background]="tool.gradient">
+            <mat-icon [svgIcon]="tool.icon" class="text-white"></mat-icon>
+        </div>
+        <span class="font-mono font-semibold text-xs uppercase tracking-wider text-slate-700 text-center">
+            {{ tool.name }}
+        </span>
+        <span class="text-[11px] text-slate-400 text-center leading-tight">{{ tool.description }}</span>
+    </button>
+    }
+</div>
+}
+
+@if (activeTool()) {
+<div class="space-y-6">
+
+    @if (status() === 'idle' || status() === 'error') {
+
+    <!-- Upload Area -->
+    <div class="relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300 cursor-pointer"
+        [class]="isDragOver() ? 'border-indigo-400 bg-indigo-50 scale-[1.01]' : 'border-slate-300 bg-white hover:border-indigo-300 hover:bg-slate-50'"
+        (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)" (click)="fileInput.click()">
+
+        <input #fileInput type="file" class="hidden" [accept]="activeTool()!.acceptedMimes.join(',')"
+            [multiple]="activeTool()!.supportsMultiFile" (change)="onFileSelected($event)" />
+
+        <mat-icon svgIcon="down-from-bracket" class="mx-auto mb-3"
+            [class]="isDragOver() ? 'text-indigo-500' : 'text-slate-400'"></mat-icon>
+        <p class="text-sm font-medium text-slate-600">
+            Drop images here or <span class="text-indigo-600 underline">click to browse</span>
+        </p>
+        <p class="text-xs text-slate-400 mt-1">
+            PNG, JPG, WEBP, GIF, BMP, SVG · Max {{ activeTool()!.maxFileSizeMb }} MB
+            @if (activeTool()!.supportsMultiFile) {
+            · Up to {{ activeTool()!.maxFiles }} files
+            }
+        </p>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+        <mat-icon svgIcon="octagon-xmark" class="shrink-0"></mat-icon>
+        {{ errorMessage() }}
+    </div>
+    }
+
+    @if (hasFiles()) {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        @if (previewUrl()) {
+        <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-2 px-1">
+                <span
+                    class="text-[10px] font-mono font-bold uppercase tracking-widest text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded">
+                    Live Preview
+                </span>
+                <span class="text-[10px] font-mono text-slate-400 capitalize">
+                    {{ activeTool()?.id }}
+                </span>
+            </div>
+            <div class="relative bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex items-center justify-center overflow-hidden"
+                style="min-height: 240px; max-height: 400px;">
+                <img [src]="previewUrl()" alt="Preview" [ngStyle]="previewStyle()"
+                    class="max-w-full max-h-full object-contain" />
+
+                @if (activeTool()?.id === 'crop') {
+                <div [ngStyle]="cropOverlayStyle()"
+                    class="absolute pointer-events-none border-2 border-dashed border-indigo-500 bg-indigo-50/20">
+                    <div
+                        class="absolute -top-6 left-0 bg-indigo-600 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">
+                        {{ cropW() }}x{{ cropH() }}
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+            <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <span class="text-xs font-mono font-semibold uppercase tracking-wider text-slate-500">
+                    {{ files().length }} file{{ files().length > 1 ? 's' : '' }}
+                </span>
+                <span class="text-xs text-slate-400">Total: {{ formatFileSize(totalSize()) }}</span>
+            </div>
+            @for (item of files(); track item.id) {
+            <div
+                class="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0 hover:bg-slate-50 transition">
+                <mat-icon svgIcon="file" class="text-slate-400 shrink-0"></mat-icon>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm text-slate-700 truncate">{{ item.file.name }}</p>
+                    <p class="text-xs text-slate-400">{{ formatFileSize(item.file.size) }}</p>
+                </div>
+                <button mat-icon-button (click)="removeFile(item.id)" matTooltip="Remove">
+                    <mat-icon svgIcon="trash-can"></mat-icon>
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Tool Options (Moved to bottom) -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+        @switch (activeTool()!.id) {
+        @case ('convert') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Target Format
+        </label>
+        <div class="flex gap-3">
+            @for (fmt of formatOptions; track fmt.value) {
+            <button (click)="targetFormat.set(fmt.value)"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all"
+                [class]="targetFormat() === fmt.value ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-slate-200 text-slate-500 hover:border-violet-300'">
+                {{ fmt.label }}
+            </button>
+            }
+        </div>
+        @if (targetFormat() === 'image/jpeg' || targetFormat() === 'image/webp') {
+        <div class="mt-3">
+            <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                Quality: {{ (convertQuality() * 100) | number:'1.0-0' }}%
+            </label>
+            <input type="range" min="0.1" max="1" step="0.05" class="w-full accent-violet-600" [ngModel]="convertQuality()"
+                (ngModelChange)="convertQuality.set($event)" />
+        </div>
+        }
+        }
+
+        @case ('resize') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Dimensions (px)
+        </label>
+        <div class="flex gap-3 items-center mb-4">
+            <input type="number" min="1" max="10000"
+                class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-violet-400 focus:ring-2 focus:ring-violet-100 outline-none"
+                placeholder="Width" [ngModel]="resizeWidth()" (ngModelChange)="resizeWidth.set($event)" />
+            <span class="text-slate-400 text-sm">×</span>
+            <input type="number" min="1" max="10000"
+                class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-violet-400 focus:ring-2 focus:ring-violet-100 outline-none"
+                placeholder="Height" [ngModel]="resizeHeight()" (ngModelChange)="resizeHeight.set($event)" />
+        </div>
+
+        <div class="my-4">
+            <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                Quick Scale: {{ resizeScale() }}%
+            </label>
+            <input type="range" min="1" max="100" step="1" class="w-full accent-violet-600" [ngModel]="resizeScale()"
+                (ngModelChange)="onScaleChange($event)" />
+        </div>
+
+        <label class="flex items-center gap-2 mt-2 cursor-pointer">
+            <input type="checkbox" class="accent-violet-600 rounded" [ngModel]="maintainRatio()"
+                (ngModelChange)="maintainRatio.set($event)" />
+            <span class="text-sm text-slate-600">Maintain aspect ratio</span>
+        </label>
+        }
+
+        @case ('compress') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Quality: {{ (compressQuality() * 100) | number:'1.0-0' }}%
+        </label>
+        <input type="range" min="0.1" max="1" step="0.05" class="w-full accent-violet-600" [ngModel]="compressQuality()"
+            (ngModelChange)="compressQuality.set($event)" />
+        <p class="text-xs text-slate-400 mt-1">Lower quality = smaller file size</p>
+        }
+
+        @case ('rotate-flip') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Rotate
+        </label>
+        <div class="flex gap-3 mb-4">
+            @for (deg of [90, 180, 270]; track deg) {
+            <button (click)="rotateDegrees.set(deg)"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all"
+                [class]="rotateDegrees() === deg ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-slate-200 text-slate-500 hover:border-violet-300'">
+                {{ deg }}°
+            </button>
+            }
+        </div>
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Or Flip
+        </label>
+        <div class="flex gap-3">
+            <button (click)="flipDirection.set('horizontal'); flipImage()"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 hover:border-violet-300 hover:bg-violet-50 transition-all">
+                ↔ Horizontal
+            </button>
+            <button (click)="flipDirection.set('vertical'); flipImage()"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 hover:border-violet-300 hover:bg-violet-50 transition-all">
+                ↕ Vertical
+            </button>
+        </div>
+        }
+
+        @case ('crop') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Crop Region (px)
+        </label>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-xs text-slate-400 font-mono">X</label>
+                <input type="number" min="0"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:border-violet-400 outline-none"
+                    [ngModel]="cropX()" (ngModelChange)="cropX.set($event)" />
+            </div>
+            <div>
+                <label class="text-xs text-slate-400 font-mono">Y</label>
+                <input type="number" min="0"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:border-violet-400 outline-none"
+                    [ngModel]="cropY()" (ngModelChange)="cropY.set($event)" />
+            </div>
+            <div>
+                <label class="text-xs text-slate-400 font-mono">Width</label>
+                <input type="number" min="1"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:border-violet-400 outline-none"
+                    [ngModel]="cropW()" (ngModelChange)="cropW.set($event)" />
+            </div>
+            <div>
+                <label class="text-xs text-slate-400 font-mono">Height</label>
+                <input type="number" min="1"
+                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:border-violet-400 outline-none"
+                    [ngModel]="cropH()" (ngModelChange)="cropH.set($event)" />
+            </div>
+        </div>
+        }
+
+        @case ('enhance') {
+        <div class="space-y-4">
+            <div>
+                <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                    Brightness: {{ brightness() > 0 ? '+' : '' }}{{ brightness() }}
+                </label>
+                <input type="range" min="-100" max="100" step="5" class="w-full accent-violet-600"
+                    [ngModel]="brightness()" (ngModelChange)="brightness.set($event)" />
+            </div>
+            <div>
+                <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                    Contrast: {{ contrast() > 0 ? '+' : '' }}{{ contrast() }}
+                </label>
+                <input type="range" min="-100" max="100" step="5" class="w-full accent-violet-600"
+                    [ngModel]="contrast()" (ngModelChange)="contrast.set($event)" />
+            </div>
+        </div>
+        }
+
+        @case ('upscale') {
+        <label class="block text-xs font-mono font-semibold uppercase tracking-wider text-slate-500 mb-2">
+            Scale Factor
+        </label>
+        <div class="flex gap-3">
+            @for (f of [2, 3, 4]; track f) {
+            <button (click)="upscaleFactor.set(f)"
+                class="flex-1 py-2.5 rounded-xl text-sm font-semibold border-2 transition-all"
+                [class]="upscaleFactor() === f ? 'border-violet-500 bg-violet-50 text-violet-700' : 'border-slate-200 text-slate-500 hover:border-violet-300'">
+                {{ f }}×
+            </button>
+            }
+        </div>
+        }
+
+        @default {
+        <p class="text-sm text-slate-500">Ready to process your images.</p>
+        }
+        }
+    </div>
+
+    <button mat-flat-button (click)="process()" class="!w-full !py-3 !rounded-xl !text-sm !font-mono !font-semibold !uppercase !tracking-wider
+               !bg-gradient-to-r !from-indigo-600 !to-violet-600 !text-white !shadow-md
+               hover:!shadow-lg hover:!scale-[1.01] !transition-all !duration-200">
+        <mat-icon svgIcon="arrow-right-long" class="mr-2"></mat-icon>
+        Process {{ files().length }} image{{ files().length > 1 ? 's' : '' }}
+    </button>
+    }
+    }
+
+
+    @if (status() === 'processing') {
+    <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center">
+        <mat-progress-bar mode="indeterminate" class="!rounded-full mb-6"></mat-progress-bar>
+        <p class="text-sm font-medium text-slate-600">Processing your images…</p>
+        <p class="text-xs text-slate-400 mt-1">This may take a moment for larger files</p>
+    </div>
+    }
+
+
+    @if (status() === 'done' && results().length > 0) {
+    <div class="bg-white border border-emerald-200 rounded-2xl shadow-sm overflow-hidden">
+        <div
+            class="px-5 py-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-200 flex items-center gap-3">
+            <mat-icon svgIcon="check-double" style="color: #006061;"></mat-icon>
+            <div>
+                <p class="text-sm font-semibold text-emerald-800">Processing Complete</p>
+                <p class="text-xs text-emerald-600">{{ results().length }} file{{ results().length > 1 ? 's' : '' }}
+                    ready</p>
+            </div>
+        </div>
+
+        @for (r of results(); track r.filename; let i = $index) {
+        <div class="flex items-center gap-3 px-5 py-3 border-b border-slate-100 last:border-b-0">
+            <mat-icon svgIcon="file" class="text-emerald-500 shrink-0"></mat-icon>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm text-slate-700 truncate">{{ r.filename }}</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-xs text-slate-400">
+                        {{ formatFileSize(r.originalSize) }} → {{ formatFileSize(r.resultSize) }}
+                    </p>
+                    @if (r.resultSize < r.originalSize) { <span
+                        class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
+                        {{ (((r.originalSize - r.resultSize) / r.originalSize) * 100) | number:'1.0-0' }}% smaller
+                        </span>
+                        }
+                </div>
+            </div>
+            <button mat-icon-button (click)="downloadSingle(r)" matTooltip="Download"
+                class="hover:bg-emerald-50 transition">
+                <mat-icon svgIcon="down-from-bracket" class="text-emerald-600"></mat-icon>
+            </button>
+        </div>
+        }
+
+        <div class="px-5 py-4 bg-slate-50 flex gap-3">
+            <button mat-flat-button (click)="downloadAll()" class="flex-1 !rounded-xl !py-2.5 !text-sm !font-mono !font-semibold !uppercase !tracking-wider
+                       !bg-gradient-to-r !from-emerald-600 !to-teal-600 !text-white">
+                <mat-icon svgIcon="down-from-bracket" class="mr-2"></mat-icon>
+                Download All
+            </button>
+            <button mat-stroked-button (click)="startOver()"
+                class="!rounded-xl !py-2.5 !text-sm !font-mono !font-semibold !uppercase !tracking-wider !border-slate-300">
+                Start Over
+            </button>
+        </div>
+    </div>
+    }
+
+</div>
+}

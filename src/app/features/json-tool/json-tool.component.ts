@@ -90,12 +90,12 @@ export class JsonToolComponent {
         }
 
         try {
-            let data = JSON.parse(input);
+            let data = this.parseJsonLikeInput(input);
 
             // If the result is a string, try to parse it again (handles escaped JSON)
             if (typeof data === 'string') {
                 try {
-                    const nestedData = JSON.parse(data);
+                    const nestedData = this.parseJsonLikeInput(data);
                     // Only use it if it actually parsed into an object or array
                     if (nestedData && typeof nestedData === 'object') {
                         data = nestedData;
@@ -111,6 +111,18 @@ export class JsonToolComponent {
             this.error.set('Invalid JSON format: ' + e.message);
             this.parsedData.set(null);
         }
+    }
+
+    private parseJsonLikeInput(input: string): any {
+        try {
+            return JSON.parse(input);
+        } catch {
+            return JSON.parse(this.quoteBareObjectKeys(input));
+        }
+    }
+
+    private quoteBareObjectKeys(input: string): string {
+        return input.replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g, '$1"$2"$3');
     }
 
     /** Format the text inside the input box */

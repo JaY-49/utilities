@@ -24,9 +24,8 @@
 </header>
 
 
-<mat-sidenav-container class="grow" style="height: calc(100vh - 64px)">
+<mat-sidenav-container class="grow" style="height: calc(100vh - 80px)">
 
-  <!-- SIDEBAR -->
   <mat-sidenav mode="side" opened class="border-r border-slate-200 bg-white shadow-sm transition-all duration-300"
     [style.width.px]="sidebarOpened() ? 280 : 72">
 
@@ -35,231 +34,24 @@
 
       <mat-nav-list class="p-0" [class.collapsed-sidebar]="!sidebarOpened()">
 
-        <!-- DATA & DEV -->
+        @for (item of NAV_ITEMS; track item) {
 
-        <a mat-list-item (click)="selectedTab.set('time')" [class.nav-active]="selectedTab() === 'time'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Time Calculator' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="clock"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Time Calculator</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('json')" [class.nav-active]="selectedTab() === 'json'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'JSON Viewer' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="code"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">JSON Viewer</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('jsontots')" [class.nav-active]="selectedTab() === 'jsontots'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'JSON To TS' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="file-code"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">JSON To TS</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('csvjson')" [class.nav-active]="selectedTab() === 'csvjson'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'CSV ↔ JSON' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="table-columns"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">CSV ↔ JSON</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('jwt')" [class.nav-active]="selectedTab() === 'jwt'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'JWT Debugger' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="shield-halved"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">JWT Debugger</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('diff')" [class.nav-active]="selectedTab() === 'diff'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Diff Checker' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="copy"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Diff Checker</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('linediff')" [class.nav-active]="selectedTab() === 'linediff'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Line Highlighter' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="list-check"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Line Highlighter</span>
-          }
-
-        </a>
-
+        @if (item.type === 'divider') {
         <div class="my-4 border-t border-slate-200"></div>
+        } @else {
 
-        <!-- TEXT -->
-
-        <a mat-list-item (click)="selectedTab.set('text')" [class.nav-active]="selectedTab() === 'text'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Text Toolbox' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="pencil"></mat-icon>
+        <a mat-list-item [routerLink]="item.path" routerLinkActive="nav-active"
+          class="nav-item rounded-xl transition-all hover:bg-slate-50" [matTooltip]="!sidebarOpened() ? item.label : ''"
+          matTooltipPosition="right">
+          <mat-icon matListItemIcon [svgIcon]="item.icon"></mat-icon>
 
           @if (sidebarOpened()) {
-          <span class="menu-label">Text Toolbox</span>
+          <span class="menu-label">{{ item.label }}</span>
           }
-
         </a>
 
-        <a mat-list-item (click)="selectedTab.set('dupdetect')" [class.nav-active]="selectedTab() === 'dupdetect'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Duplicate Detector' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="clone"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Duplicate Detector</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('colalign')" [class.nav-active]="selectedTab() === 'colalign'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Column Aligner' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="align-left"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Column Aligner</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('regex')" [class.nav-active]="selectedTab() === 'regex'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'RegEx Tester' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="magnifying-glass"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">RegEx Tester</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('charfreq')" [class.nav-active]="selectedTab() === 'charfreq'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Char Frequency' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="chart-bar"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Char Frequency</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('base64')" [class.nav-active]="selectedTab() === 'base64'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Base64 / URL' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="lock"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Base64 / URL</span>
-          }
-
-        </a>
-
-        <div class="my-4 border-t border-slate-200"></div>
-
-        <!-- SYSTEM -->
-
-        <a mat-list-item (click)="selectedTab.set('file')" [class.nav-active]="selectedTab() === 'file'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'File Converter' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="right-left"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">File Converter</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('epoch')" [class.nav-active]="selectedTab() === 'epoch'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Epoch Converter' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="calendar-days"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Epoch Converter</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('filesize')" [class.nav-active]="selectedTab() === 'filesize'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'File Size Formatter' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="hard-drive"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">File Size Formatter</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('gen')" [class.nav-active]="selectedTab() === 'gen'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'Generator' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="key"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">Generator</span>
-          }
-
-        </a>
-
-        <a mat-list-item (click)="selectedTab.set('qr')" [class.nav-active]="selectedTab() === 'qr'"
-          class="nav-item rounded-xl transition-all hover:bg-slate-50"
-          [matTooltip]="!sidebarOpened() ? 'QR Generator' : ''" matTooltipPosition="right">
-
-          <mat-icon matListItemIcon svgIcon="qrcode-read"></mat-icon>
-
-          @if (sidebarOpened()) {
-          <span class="menu-label">QR Generator</span>
-          }
-
-        </a>
+        }
+        }
 
       </mat-nav-list>
 
@@ -276,30 +68,7 @@
 
       <div class="w-full max-w-7xl">
 
-        @switch (selectedTab()) {
-
-        @case ('time') { <app-time-calculator /> }
-        @case ('file') { <app-file-converter /> }
-        @case ('json') { <app-json-tool /> }
-        @case ('jsontots') { <app-json-to-ts /> }
-        @case ('qr') { <app-qr-generator /> }
-        @case ('base64') { <app-base64-url /> }
-        @case ('epoch') { <app-epoch-converter /> }
-        @case ('diff') { <app-diff-checker /> }
-        @case ('gen') { <app-generator /> }
-        @case ('jwt') { <app-jwt-debugger /> }
-        @case ('regex') { <app-regex-tester /> }
-        @case ('text') { <app-text-toolbox /> }
-        @case ('csvjson') { <app-csv-json /> }
-        @case ('dupdetect') { <app-duplicate-detector /> }
-        @case ('linediff') { <app-line-highlighter /> }
-        @case ('charfreq') { <app-char-frequency /> }
-        @case ('colalign') { <app-column-aligner /> }
-        @case ('filesize') { <app-file-size-formatter /> }
-
-        @default { <app-time-calculator /> }
-
-        }
+        <router-outlet />
 
       </div>
 

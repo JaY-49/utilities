@@ -26,7 +26,7 @@ export class JsonToTsComponent {
     generate() {
         try {
             this.error.set(null);
-            const parsed = JSON.parse(this.jsonInput());
+            const parsed = this.parseJsonLikeInput(this.jsonInput());
             const interfaces: string[] = [];
             this.convertObjectToInterface(parsed, this.rootInterfaceName().trim() || 'RootInterface', interfaces);
             this.tsOutput.set(interfaces.reverse().join('\n\n'));
@@ -34,6 +34,18 @@ export class JsonToTsComponent {
             this.error.set('Invalid JSON: ' + e.message);
             this.tsOutput.set('');
         }
+    }
+
+    private parseJsonLikeInput(input: string): any {
+        try {
+            return JSON.parse(input);
+        } catch {
+            return JSON.parse(this.quoteBareObjectKeys(input));
+        }
+    }
+
+    private quoteBareObjectKeys(input: string): string {
+        return input.replace(/([{,]\s*)([A-Za-z_$][\w$]*)(\s*:)/g, '$1"$2"$3');
     }
 
     private convertObjectToInterface(obj: any, name: string, interfaces: string[]) {
